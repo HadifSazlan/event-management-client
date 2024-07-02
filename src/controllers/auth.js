@@ -1,4 +1,5 @@
 import { registerUser, loginUser } from "../api/auth";
+import { jwtDecode } from "jwt-decode";
 
 const handleRegister = async (data, navigate) => {
   try {
@@ -13,8 +14,15 @@ const handleLogin = async (data, navigate) => {
   try {
     const result = await loginUser(data);
     if (result.token) {
-      console.log(result);
-      navigate("/home");
+      const decodedToken = jwtDecode(result.token);
+
+      if (decodedToken.role === "user") {
+        navigate("/home");
+      } else if (decodedToken.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        console.error("Unknown role");
+      }
     }
   } catch (error) {
     console.error(error.message);

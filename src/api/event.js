@@ -1,22 +1,16 @@
 import axios from "axios";
+import handleError from "../utils/errorHandler.js";
 
-const API_URL = "http://localhost:4000/api/v1/";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const fetchEvents = async () => {
   try {
-    const response = await axios.get(`${API_URL}/events`);
+    const response = await axios.get(`${API_URL}/index`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log("No response from server", error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-    console.log(error.config);
+    handleError(error);
   }
 };
 

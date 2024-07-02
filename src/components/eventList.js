@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 
-const EventsList = () => {
+const EventList = () => {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["events"],
     queryFn: fetchEvents,
@@ -50,4 +50,4 @@ const EventsList = () => {
   );
 };
 
-export { EventsList };
+export default EventList;

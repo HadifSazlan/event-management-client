@@ -2,18 +2,40 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/login.js";
 import RegisterPage from "./pages/register.js";
 import HomePage from "./pages/home.js";
-import { EventsList } from "./components/eventsList.js";
+import DashboardPage from "./pages/dashboard.js";
+import EventList from "./components/eventList.js";
+import EventTable from "./components/eventTable.js";
+import PrivateRoute from "./components/privateRoute.js";
+import AuthProvider from "./api/authProvider.js";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/events" element={<EventsList />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/home"
+            element={
+              <PrivateRoute role={["user", "admin"]}>
+                <HomePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute role="admin">
+                <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/event-list" element={<EventList />} />
+          <Route path="/event-table" element={<EventTable />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
