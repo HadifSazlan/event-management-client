@@ -14,4 +14,18 @@ const fetchEvents = async () => {
   }
 };
 
-export { fetchEvents };
+const createEvent = async (formData) => {
+  try {
+    const response = await axios.post(`${API_URL}/store`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export { fetchEvents, createEvent };
