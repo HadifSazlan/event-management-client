@@ -8,6 +8,8 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 const EventList = () => {
   const { isPending, isError, data, error } = useQuery({
@@ -20,13 +22,15 @@ const EventList = () => {
   }
 
   if (isError) {
-    return <div>Error laoding events: {error.message}</div>;
+    return <div>Error loading events: {error.message}</div>;
   }
 
   return (
     <Grid container spacing={2}>
       {data.map((event) => {
         const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${event.thumbnail}`;
+        const startDate = toZonedTime(event.startDate, 'Asia/Kuala_Lumpur');
+        const endDate = toZonedTime(event.endDate, 'Asia/Kuala_Lumpur');
         return (
           <Grid item key={event._id} xs={12} sm={6} md={4}>
             <Card>
@@ -50,8 +54,7 @@ const EventList = () => {
                 </Typography>
                 <Typography variant="body2">{event.location}</Typography>
                 <Typography variant="body2">
-                  {new Date(event.startDate).toLocaleString()} -{" "}
-                  {new Date(event.endDate).toLocaleString()}
+                  {format(startDate, 'yyyy-MM-dd HH:mm')} - {format(endDate, 'yyyy-MM-dd HH:mm')}
                 </Typography>
                 <Typography variant="body2">Status: {event.status}</Typography>
               </CardContent>

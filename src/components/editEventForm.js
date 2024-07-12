@@ -1,17 +1,29 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Button, Grid, Paper, TextField } from "@mui/material";
-import { createEvent } from "../api/event.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { TextField, Button, Grid, Paper, MenuItem } from "@mui/material";
+import { editEvent } from "../api/event.js";
+import { format, parseISO } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 
-const CreateEventForm = () => {
-  const { register, handleSubmit, reset } = useForm();
+const EditEventForm = ({ event, onCancel }) => {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      name: event.name || "",
+      startDate: event.startDate ? format(parseISO(event.startDate), "yyyy-MM-dd'T'HH:mm") : "",
+      endDate: event.endDate ? format(parseISO(event.endDate), "yyyy-MM-dd'T'HH:mm") : "",
+      location: event.location || "",
+      status: event.status || "",
+    },
+  });
+
   const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: createEvent,
+
+  const editMutation = useMutation({
+    mutationFn: (formData) => editEvent(event._id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries("events");
       reset();
+      onCancel();
     },
   });
 
@@ -22,16 +34,17 @@ const CreateEventForm = () => {
     formData.append("endDate", fromZonedTime(data.endDate, 'Asia/Kuala_Lumpur').toISOString());
     formData.append("location", data.location);
     formData.append("thumbnail", data.thumbnail[0]);
-
-    mutation.mutate(formData);
+    formData.append("status", data.status);
+    editMutation.mutate(formData);
   };
 
   return (
     <Paper style={{ padding: 20 }}>
-      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
+              autoComplete="on"
               label="Event Name"
               {...register("name", { required: true })}
               fullWidth
@@ -65,9 +78,24 @@ const CreateEventForm = () => {
           <Grid item xs={12}>
             <input type="file" {...register("thumbnail")} />
           </Grid>
-          <Grid item xs={12} align="right">
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Status"
+              defaultValue={event.status}
+              {...register("status", { required: true })}
+              fullWidth
+            >
+              <MenuItem value="Ongoing">Ongoing</MenuItem>
+              <MenuItem value="Completed">Completed</MenuItem>
+            </TextField>
+          </Grid>
+          <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
             <Button type="submit" variant="contained" color="primary">
-              Create Event
+              Edit
+            </Button>
+            <Button variant="contained" color="secondary" onClick={onCancel}>
+              Cancel
             </Button>
           </Grid>
         </Grid>
@@ -76,4 +104,4 @@ const CreateEventForm = () => {
   );
 };
 
-export default CreateEventForm;
+export default EditEventForm;

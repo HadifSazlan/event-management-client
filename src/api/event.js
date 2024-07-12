@@ -28,4 +28,29 @@ const createEvent = async (formData) => {
   }
 };
 
-export { fetchEvents, createEvent };
+const editEvent = async (eventId, formData) => {
+  try {
+    const response = await axios.put(`${API_URL}/update/${eventId}`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+const deleteEvent = async (eventId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/remove/${eventId}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export { fetchEvents, createEvent, editEvent, deleteEvent };

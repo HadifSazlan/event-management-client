@@ -8,6 +8,7 @@ import EventTable from "./components/eventTable.js";
 import PrivateRoute from "./components/privateRoute.js";
 import AuthProvider from "./api/authProvider.js";
 import CreateEventForm from "./components/createEventForm.js";
+import EditEventForm from "./components/editEventForm.js";
 
 function App() {
   return (
@@ -34,7 +35,8 @@ function App() {
           />
           <Route path="/event-list" element={<EventList />} />
           <Route path="/event-table" element={<EventTable />} />
-          <Route path="/create-event" element={<CreateEventForm />} />
+          <Route path="/event-create" element={<CreateEventForm />} />
+          <Route path="/event-edit" element={<EditEventForm />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
